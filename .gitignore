@@ -1,16 +1,9 @@
-# Default ignored files
-/shelf/
-/workspace.xml
-# Editor-based HTTP Client requests
-/httpRequests/
-# Datasource local storage ignored files
-/dataSources/
-/dataSources.local.xml
-/CS8321_Lab1.iml
-/misc.xml
-/modules.xml
-/inspectionProfiles/profiles_settings.xml
-/inspectionProfiles/Project_Default.xml
-/vcs.xml
 /embeddings/glove.840B.300d.txt
 /embeddings/GoogleNews-vectors-negative300.bin
+/.idea/CS8321_Lab1.iml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/inspectionProfiles/profiles_settings.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/vcs.xml
+/.idea/workspace.xml
