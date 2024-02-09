@@ -1,28 +1,3 @@
-admiration
-amusement
-anger
-annoyance
-approval
-caring
-confusion
-curiosity
-desire
-disappointment
-disapproval
-disgust
-embarrassment
-excitement
-fear
-gratitude
-grief
-joy
-love
-nervousness
-optimism
-pride
-realization
-relief
-remorse
-sadness
-surprise
-neutral
+version https://git-lfs.github.com/spec/v1
+oid sha256:45c3ef86782d2a4d7fedcd6d8c111aa0d0e94720689bd164fac94fefb4495a89
+size 248
