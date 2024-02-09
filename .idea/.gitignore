@@ -12,3 +12,5 @@
 /inspectionProfiles/profiles_settings.xml
 /inspectionProfiles/Project_Default.xml
 /vcs.xml
+/embeddings/glove.840B.300d.txt
+/embeddings/GoogleNews-vectors-negative300.bin

@@ -1,5 +1,7 @@
 # Created by Bryce Shurts on January 29th, 2024
 # Purpose: Load classifer model & related embeddings, construct example cases for definitional distance comparison
+# Download link for word2vec: https://drive.google.com/file/d/0B7XkCwpI5KDYNlNUTTlSS21pQmM/edit?usp=sharing
+# Download link for Glove: https://huggingface.co/stanfordnlp/glove/resolve/main/glove.840B.300d.zip
 
 import matplotlib.pyplot as plt
 import numpy as np
