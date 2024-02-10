@@ -12,9 +12,10 @@ import torch
 import torchtext
 from gensim.models import KeyedVectors
 
-CLASSIFIERS_PATH: str = "classifiers/"
-DATASET_PATH: str = "datasets/"
-EMBEDDINGS_PATH: str = "embeddings/"
+BASE_PATH: str = os.path.dirname(os.path.abspath(__file__))
+CLASSIFIERS_PATH: str = BASE_PATH + "/classifiers/"
+DATASET_PATH: str = BASE_PATH + "/datasets/"
+EMBEDDINGS_PATH: str = BASE_PATH + "/embeddings/"
 NUM_EMOTIONS: int = 28
 EMBED_SIZE: int = 0
 

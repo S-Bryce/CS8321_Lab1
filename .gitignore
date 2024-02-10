@@ -1,5 +1,7 @@
 /embeddings/glove.840B.300d.txt
 /embeddings/GoogleNews-vectors-negative300.bin
+/embeddings/GoogleNews-vectors-negative300.bin.gz
+/embeddings/glove.840B.300d.zip
 /.idea/CS8321_Lab1.iml
 /.idea/misc.xml
 /.idea/modules.xml
