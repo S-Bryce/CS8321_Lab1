@@ -116,8 +116,6 @@ def compare_embeddings(comparison_embeddings: dict[str, list[list[Tensor]]]) -> 
                 result[embedding] = []
             distances: dict[str, list[float]] = get_distances(group_vectors)
             result[embedding].append(distances)
-            # word_list = word_comparison_groups[idx] # Can query by idx bc comp groups were inserted in order earlier
-            # visualize_embedding(group_vectors, distances, word_list)
     return result
 
 def compare_distances(embedding_distances: dict[str, list[dict[str, list[float]]]]):
@@ -139,32 +137,49 @@ def compare_distances(embedding_distances: dict[str, list[dict[str, list[float]]
     """
     Plots boxplots of the distance ratios for each embedding and distance type.
     Args: ratios: dict[str, dict[str, list[float]]] - Dictionary of embedding names to a dictionary of distance types to a list of all their calculated distance ratios.
-    {
+    
+    Ex:
+    ratios = {
         "glove": {
             "euclidean": [1.0, 2.55, 1.380, 4.44, 4.4, 4983],
+            "cosine": [1.0, 2.55, 1.380, 4.44, 4.4, 4983],
             ...
         },
-        ...
+        "numberbatch": {
+            "euclidean": [1.0, 2.55, 1.380, 4.44, 4.4, 4983],
+            "cosine": [1.0, 2.55, 1.380, 4.44, 4.4, 4983],
+            ...        
+        }
     }
     """
     def show_boxplots(ratios: dict[str, dict[str, list[float]]]):
-        fig, axs = plt.subplots(len(ratios), 1, figsize=(10, 8), sharex=True)
-
-        distances: dict[str, list[float]] = ratios.values()
+        distances: list[dict[str, list[float]]] = list(ratios.values())
+        # Get all the values per distance type for every embedding
+        to_plot = {}
         for i in range(0, len(distances)):
-            embedding_names = list(ratios.keys())
-            # distance_types = list(distances.keys())
-            distance_types = set()
-            for distances_dict in distances:
-                distance_types.update(distances_dict.keys())
-            distance_types = list(distance_types)
-
-            distance_ratio_values = list([ item.values() for item in distances ][0])
-            axs[i].boxplot(distance_ratio_values[i])
-            axs[i].set_xticklabels(embedding_names)
-            axs[i].set_title(distance_types[i])
-        plt.tight_layout()
-        plt.show()
+            for embedding_name, distances2 in ratios.items():
+                for distance_type, values in distances2.items():
+                    print(embedding_name, distance_type, values)
+                    if to_plot.get(distance_type) is None:
+                        to_plot[distance_type] = {}
+                    to_plot[distance_type][embedding_name] = values
+            
+            # for distance_type, embedding_data in to_plot.items():
+            #     fig, axs = plt.subplots(len(ratios), 1, figsize=(10, 8), sharex=True) # Need to change this so that for every distance type, there is a boxplot for each embedding
+            #     for embedding_name, values in embedding_data.items():
+            #         axs[i].boxplot(values)
+            #         axs[i].set_xticklabels(embedding_name)
+            #         axs[i].set_title(distance_type)
+            #         plt.tight_layout()
+            #         plt.show()
+        for distance_type, embedding_data in to_plot.items():
+            fig, axs = plt.subplots(len(ratios), 1, figsize=(10, 8), sharex=True)
+            for idx, (embedding_name, values) in enumerate(embedding_data.items()):
+                axs[idx].boxplot(values)
+                axs[idx].set_xticklabels([embedding_name])  # Wrap embedding_name in a list
+                axs[idx].set_title(distance_type)
+            plt.tight_layout()
+            plt.show()
     
     # Dict of embedding name to distance type and its calculated distance ratio
     ratios = calculate_distance_ratios()
