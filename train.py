@@ -69,7 +69,7 @@ class pandas_dataset(torch.utils.data.Dataset):
         return self.df["text"].iloc[index], self.df["emotion_ids"].iloc[index]
 
 
-def get_vectors(embedding: str) -> (dict[str, int], torch.Tensor):
+def get_vectors(embedding: str) -> tuple[dict[str, int], torch.Tensor]:
     skip_first_line: bool = False
     global EMBED_SIZE  # Sorry
     match embedding:
