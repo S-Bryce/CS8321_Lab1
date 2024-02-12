@@ -163,21 +163,17 @@ def compare_distances(embedding_distances: dict[str, list[dict[str, list[float]]
                     if to_plot.get(distance_type) is None:
                         to_plot[distance_type] = {}
                     to_plot[distance_type][embedding_name] = values
-            
-            # for distance_type, embedding_data in to_plot.items():
-            #     fig, axs = plt.subplots(len(ratios), 1, figsize=(10, 8), sharex=True) # Need to change this so that for every distance type, there is a boxplot for each embedding
-            #     for embedding_name, values in embedding_data.items():
-            #         axs[i].boxplot(values)
-            #         axs[i].set_xticklabels(embedding_name)
-            #         axs[i].set_title(distance_type)
-            #         plt.tight_layout()
-            #         plt.show()
+                    
         for distance_type, embedding_data in to_plot.items():
-            fig, axs = plt.subplots(len(ratios), 1, figsize=(10, 8), sharex=True)
-            for idx, (embedding_name, values) in enumerate(embedding_data.items()):
-                axs[idx].boxplot(values)
-                axs[idx].set_xticklabels([embedding_name])  # Wrap embedding_name in a list
-                axs[idx].set_title(distance_type)
+            fig, axs = plt.subplots(figsize=(10, 8))
+            boxplots_data = []
+            labels = []
+            for embedding_name, values in embedding_data.items():
+                boxplots_data.append(values)
+                labels.append(embedding_name)
+            axs.boxplot(boxplots_data)
+            axs.set_xticklabels(labels)
+            axs.set_title(distance_type)
             plt.tight_layout()
             plt.show()
     
