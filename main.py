@@ -18,7 +18,6 @@ embeddings = ["numberbatch", "glove"] # Embeddings definition. Add word2vec once
 # Word comparison groups. Format: [base_word, similar_word_1, similar_word_2]
 word_comparison_groups = [
     ["tire", "tired", "tyre"],
-    ["tire", "tired", "tyre"],
 ]
 
 # Add a new distance function here if you want.
