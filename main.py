@@ -13,7 +13,7 @@ from train import get_vectors
 
 
 # EDITABLE VARIABLES
-embeddings = ["numberbatch", "glove"] # Embeddings definition. Add word2vec once deserialization is done.
+embeddings = ["numberbatch", "glove", "word2vec"] # Embeddings definition. Add word2vec once deserialization is done.
 
 # Word comparison groups. Format: [base_word, similar_word_1, similar_word_2]
 word_comparison_groups = [
