@@ -69,6 +69,28 @@ class pandas_dataset(torch.utils.data.Dataset):
         return self.df["text"].iloc[index], self.df["emotion_ids"].iloc[index]
 
 
+def parse_word2vec(word2vec_embeddings, embedding_components) -> tuple[dict[str, int], torch.Tensor]:
+        word_labels: dict[str, int] = {}
+        tensor: torch.Tensor = torch.empty((EMBED_SIZE + 1, embedding_components), dtype=torch.float32, device=device)
+        
+        # Clean up the file and load the embeddings into a tensor
+        loop_idx = 0
+        for word, idx in word2vec_embeddings.key_to_index.items():
+            word_labels[word] = idx
+            tensor[idx] = torch.tensor(word2vec_embeddings.get_vector(word), dtype=torch.float32,
+                                         device=device)
+            # Output our progress every 100,000 words
+            if (loop_idx + 1) % 100000 == 0:
+                print("Processed {}/{}".format(loop_idx + 1, EMBED_SIZE))
+            loop_idx += 1
+        tensor[-1] = torch.zeros(embedding_components, dtype=torch.float32, device=device)
+
+        # Adding a padding token
+        word_labels["<PAD>"] = EMBED_SIZE
+        tensor.to(device)
+        return word_labels, tensor
+
+
 def get_vectors(embedding: str) -> tuple[dict[str, int], torch.Tensor]:
     skip_first_line: bool = False
     global EMBED_SIZE  # Sorry
@@ -80,7 +102,8 @@ def get_vectors(embedding: str) -> tuple[dict[str, int], torch.Tensor]:
         case "word2vec":
             embedding_path: str = EMBEDDINGS_PATH + "GoogleNews-vectors-negative300.bin"
             gn_model = KeyedVectors.load_word2vec_format(embedding_path, binary=True)
-            # Ignoring this for now, too lazy to deserialize
+            EMBED_SIZE = 3000000
+            return parse_word2vec(gn_model, embedding_components)
         case "numberbatch":
             embedding_path: str = EMBEDDINGS_PATH + "numberbatch-19.08-en.txt"
             EMBED_SIZE = 516782
