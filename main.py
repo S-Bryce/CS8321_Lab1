@@ -11,17 +11,42 @@ from torch import Tensor, cat
 from torch.cuda import is_available as cuda_is_available
 from train import get_vectors
 
-
 # EDITABLE VARIABLES
-embeddings = ["numberbatch", "glove", "word2vec"] # Embeddings definition. Add word2vec once deserialization is done.
+embeddings = ["numberbatch", "glove"] # Embeddings definition. Add word2vec once deserialization is done.
 
 # Word comparison groups. Format: [base_word, similar_word_1, similar_word_2]
 word_comparison_groups = [
     ["tire", "tired", "tyre"],
+    ["chest", "thorax", "crate"],
+    ["fall", "autumn", "plummet"],
+    ["bear", "carry", "ursidae"],
+    ["proof", "evidence", "testing"],
+    ["tear", "rip", "droplet"],
+    ["salty", "flavored", "tough"],
+    ["land", "earth", "arrive"],
+    ["close", "near", "shut"],
+    ["light", "illumination", "lightweight"],
+    ["match", "competition", "firestarter"],
+    ["wind", "breeze", "coil"],
+    ["fly", "diptera", "flight"],
+    ["lead", "guide", "pb"],
+    ["watch", "observe", "wristwatch"],
+    ["file", "organize", "rasp"],
+    ["change", "modify", "currency"],
+    ["bark", "woof", "skin"],
+    ["refuse", "decline", "garbage"],
+    ["protest", "rally", "complain"],
+    ["escort", "companion", "accompany"],
+    ["produce", "food", "make"],
+    ["desert", "abandon", "wilderness"],
+    ["live", "stream", "exist"],
+    ["house", "home", "contain"]
 ]
 
+
 # Add a new distance function here if you want.
-def calculate_distances(base_word: ndarray[float], similar_word_1: ndarray[float], similar_word_2: ndarray[float]) -> dict[str, list[float]]:
+def calculate_distances(base_word: ndarray[float], similar_word_1: ndarray[float], similar_word_2: ndarray[float]) -> \
+dict[str, list[float]]:
     return {
         "euclidean": [euclidean_distance(similar_word_1, base_word), euclidean_distance(similar_word_2, base_word)],
         "cosine": [cosine_similarity(similar_word_1, base_word), cosine_similarity(similar_word_2, base_word)],
@@ -35,11 +60,14 @@ def calculate_distances(base_word: ndarray[float], similar_word_1: ndarray[float
 def euclidean_distance(vector1: Tensor, vector2: Tensor) -> float:
     return np.linalg.norm(vector1 - vector2)
 
+
 def cosine_similarity(vector1: Tensor, vector2: Tensor) -> float:
     return np.dot(vector1, vector2) / (np.linalg.norm(vector1) * np.linalg.norm(vector2))
 
+
 def manhattan_distance(v1, v2):
     return np.sum(np.abs(v1 - v2))
+
 
 def convert_tensors_to_numpy(embeddings_list: list[Tensor]) -> ndarray[float]:
     if cuda_is_available():
@@ -48,12 +76,15 @@ def convert_tensors_to_numpy(embeddings_list: list[Tensor]) -> ndarray[float]:
         numpy_vectors = np.array([vector.numpy() for vector in embeddings_list])
     return numpy_vectors
 
+
 def reduce_embeddings(numpy_vectors: ndarray[float]) -> ndarray[float]:
     tsne = TSNE(n_components=3, random_state=0, perplexity=2, init='pca', n_iter=6000)
     return tsne.fit_transform(numpy_vectors)
 
+
 def get_word_vectors_to_compare(numpy_vectors: ndarray[float]) -> tuple[ndarray[float], ndarray[float], ndarray[float]]:
     return numpy_vectors[0], numpy_vectors[1], numpy_vectors[2]
+
 
 def show_plot_comparison(reduced_vectors: ndarray[float], word_list: list[str], norm_distances: dict[str, list[float]]):
     for distance_type, calculated_distances in norm_distances.items():
@@ -67,30 +98,36 @@ def show_plot_comparison(reduced_vectors: ndarray[float], word_list: list[str], 
         print("{} distance between 'tire' and 'tired' is {}\nDistance between 'tire' and 'tyre' is {}".format(
             distance_type, calculated_distances[0], calculated_distances[1]))
 
+
 def get_distances(embeddings_list: list[Tensor]) -> dict[str, list[float]]:
     numpy_vectors = convert_tensors_to_numpy(embeddings_list)
     base_word, similar_word1, similar_word2 = get_word_vectors_to_compare(numpy_vectors)
     return calculate_distances(base_word, similar_word1, similar_word2)
 
-def get_reduced_vectors(embeddings_list: list[Tensor]) -> ndarray[float, float]:
-        numpy_vectors = convert_tensors_to_numpy(embeddings_list)
-        return reduce_embeddings(numpy_vectors)
 
-def visualize_embedding(embeddings_list: list[Tensor], norm_distances: dict[str, list[float]], word_list: list[str]) -> dict[str, list[float]]:
+def get_reduced_vectors(embeddings_list: list[Tensor]) -> ndarray[float, float]:
+    numpy_vectors = convert_tensors_to_numpy(embeddings_list)
+    return reduce_embeddings(numpy_vectors)
+
+
+def visualize_embedding(embeddings_list: list[Tensor], norm_distances: dict[str, list[float]], word_list: list[str]) -> \
+dict[str, list[float]]:
     reduced_vectors: ndarray[float, float] = get_reduced_vectors(embeddings_list)
     show_plot_comparison(reduced_vectors, word_list, norm_distances)
+
 
 def get_embeddings(embeddings: list[str]) -> dict[str, (dict[str, int], Tensor)]:
     if len(embeddings) == 0:
         raise ValueError("No embeddings were selected to load.")
-    
+
     result = {}
     for embedding in embeddings:
         vocab, vectors = get_vectors(embedding)
         result[embedding] = (vocab, vectors)
     return result
 
-# Bc comparison groups added in sequence, we can query word_comparison_groups by index from where the group appears in the result. 
+
+# Bc comparison groups added in sequence, we can query word_comparison_groups by index from where the group appears in the result.
 # (result[embedding_name][0] for the first word group)
 def get_comparison_embeddings(embeddings: dict[str, (dict[str, int], Tensor)]) -> dict[str, list[list[Tensor]]]:
     # Dictionary of embedding name to list of comparison groups
@@ -106,7 +143,10 @@ def get_comparison_embeddings(embeddings: dict[str, (dict[str, int], Tensor)]) -
             result[embed_name].append(comparisons)
     return result
 
+
 """Returns a dictionary of embedding names to a list of dictionaries of distance types to their calculated distances"""
+
+
 def compare_embeddings(comparison_embeddings: dict[str, list[list[Tensor]]]) -> dict[str, list[dict[str, list[float]]]]:
     result = {}
     for embedding, word_groups in comparison_embeddings.items():
@@ -117,8 +157,10 @@ def compare_embeddings(comparison_embeddings: dict[str, list[list[Tensor]]]) -> 
             result[embedding].append(distances)
     return result
 
+
 def compare_distances(embedding_distances: dict[str, list[dict[str, list[float]]]]):
     """Returns a dictionary of embedding names to a dictionary of distance types to their calculated distance ratios."""
+
     def calculate_distance_ratios():
         # Dict of embedding name to distance type and all of that distance type's calculated distance ratios
         ratios: dict[str, dict[str, list[float]]] = {}
@@ -151,6 +193,7 @@ def compare_distances(embedding_distances: dict[str, list[dict[str, list[float]]
         }
     }
     """
+
     def show_boxplots(ratios: dict[str, dict[str, list[float]]]):
         distances: list[dict[str, list[float]]] = list(ratios.values())
         # Get all the values per distance type for every embedding
@@ -162,7 +205,7 @@ def compare_distances(embedding_distances: dict[str, list[dict[str, list[float]]
                     if to_plot.get(distance_type) is None:
                         to_plot[distance_type] = {}
                     to_plot[distance_type][embedding_name] = values
-                    
+
         for distance_type, embedding_data in to_plot.items():
             fig, axs = plt.subplots(figsize=(10, 8))
             boxplots_data = []
@@ -175,10 +218,11 @@ def compare_distances(embedding_distances: dict[str, list[dict[str, list[float]]
             axs.set_title(distance_type)
             plt.tight_layout()
             plt.show()
-    
+
     # Dict of embedding name to distance type and its calculated distance ratio
     ratios = calculate_distance_ratios()
     show_boxplots(ratios)
+
 
 orig_embeddings = get_embeddings(embeddings)
 comp_embeddings = get_comparison_embeddings(orig_embeddings)

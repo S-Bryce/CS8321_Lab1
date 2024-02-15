@@ -88,7 +88,18 @@ def parse_word2vec(word2vec_embeddings, embedding_components) -> tuple[dict[str,
         # Adding a padding token
         word_labels["<PAD>"] = EMBED_SIZE
         tensor.to(device)
-        return word_labels, tensor
+        return word_labels,
+
+
+
+# wrinkled_skin -0.1185 0.0853
+# /en/c/n/wrinkled_skin -0.1185 0.0853
+
+
+# "Hello my name is bob."
+# ["hello", "my", "name", "is", "bob", "."]
+# [word_labels[n], word_labels[x], word_labels[a],  word_labels[b],  word_labels[c]]
+# [ n, x, a, b, c] --> nn.Embedding() --> [[...], [...], [...], [...], [...], [...]]
 
 
 def get_vectors(embedding: str) -> tuple[dict[str, int], torch.Tensor]:
